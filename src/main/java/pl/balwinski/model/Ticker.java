@@ -7,7 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class Ticker {
 
-    private pl.neptis.yanosik24server.model.etolltest.Market market;
+    private Market market;
     private String time;
 
     private String rate;
