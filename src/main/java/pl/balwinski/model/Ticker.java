@@ -8,7 +8,9 @@ import lombok.Data;
 public class Ticker {
 
     private Market market;
-    private String time;
-
+    private long time;
+    private String highestBid;
+    private String lowestAsk;
     private String rate;
+    private String previousRate;
 }
