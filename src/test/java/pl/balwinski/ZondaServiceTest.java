@@ -6,6 +6,7 @@ import pl.balwinski.model.BalanceResponse;
 import pl.balwinski.model.TickerResponse;
 import pl.balwinski.service.ApiKeyService;
 import pl.balwinski.service.ConsoleInputApiKeyService;
+import pl.balwinski.service.FileApiKeyService;
 import pl.balwinski.service.ZondaService;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class ZondaServiceTest {
     }
 
     private static void getWalletsTest(ZondaService service) throws IOException {
-        ApiKeyService apiKeyService = new ConsoleInputApiKeyService();
+        ApiKeyService apiKeyService = new FileApiKeyService();
 
         String response = service.getListOfWallets(apiKeyService.getPublicApiKey(), apiKeyService.getPrivateApiKey());
         BalanceResponse balanceResponse = new Gson().fromJson(response, BalanceResponse.class);
