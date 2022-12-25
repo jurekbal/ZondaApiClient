@@ -1,4 +1,4 @@
-package pl.balwinski.model;
+package pl.balwinski.model.wallet;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package pl.balwinski.model;
+package pl.balwinski.model.trading.pub;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
