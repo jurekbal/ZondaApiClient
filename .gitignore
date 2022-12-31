@@ -32,3 +32,5 @@ target/**
 .idea/
 
 local_credentials/**
+
+output

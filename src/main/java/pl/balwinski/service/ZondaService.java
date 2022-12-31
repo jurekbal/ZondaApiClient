@@ -49,6 +49,7 @@ public class ZondaService {
         long requestTimestamp = System.currentTimeMillis() / 1000L;
         System.out.println("Current timestamp: " + requestTimestamp);
 
+        //TODO handle parameters (pages, list size etc);
         Request request = new Request.Builder()
                 .url("https://api.zonda.exchange/rest/trading/history/transactions")
                 .method("GET", null)
