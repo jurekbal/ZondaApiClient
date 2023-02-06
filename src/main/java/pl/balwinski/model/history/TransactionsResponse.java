@@ -8,7 +8,9 @@ import java.util.List;
 public class TransactionsResponse {
     private String status;
     private String totalRows;
+    private String errors;
+    private ReturnedTransactionsQuery query;
+    private String nextPageCursor;
     private List<Transaction> items;
-    private String errors; //TODO check returned type
 
 }

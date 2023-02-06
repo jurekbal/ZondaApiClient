@@ -50,8 +50,14 @@ public class ZondaService {
         System.out.println("Current timestamp: " + requestTimestamp);
 
         //TODO handle parameters (pages, list size etc);
+//        String queryParams = "%7B%22markets%22%3A%5B%22BTC-PLN%22%5D%7D"; //for debug: markets array
+        String queryParams = "%7B%22nextPageCursor%22%3A%22start%22%7D"; //for debug: nextPageCursor="start"
+//        String queryParams = "%7B%22nextPageCursor%22%3A%22QW9OeGg4UzloZjRDUHdVME1XUTBOMlUwTkMwMk9UVmxMVEV4WldNdFlURm1ZUzB3TWpReVlXTXhNVEF3TURNL0pGc2lSbFJOTFZWVFJGUWlMQ0l4TmpRd09EWXhOREE1TXpreklpd2lOREZrTkRkbE5EUXROamsxWlMweE1XVmpMV0V4Wm1FdE1ESTBNbUZqTVRFd01EQXpJbDA9%22%7D";
+            //for debug: nextPageCursor=["..."]
+
+
         Request request = new Request.Builder()
-                .url("https://api.zonda.exchange/rest/trading/history/transactions")
+                .url("https://api.zonda.exchange/rest/trading/history/transactions?query=" + queryParams) //todo get transactions in loop using nextPageCursor
                 .method("GET", null)
                 .header("API-Key", publicApiKey)
                 .header("API-Hash", APIHashGenerator.generate( publicApiKey+requestTimestamp , privateApiKey))

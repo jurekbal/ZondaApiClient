@@ -28,6 +28,9 @@ public class GetTransactionsTest {
     private static TransactionsResponse getTransactions(ZondaService service) throws IOException {
         ApiKeyService apiKeyService = new FileApiKeyService();
         String response = service.getTransactions(apiKeyService.getPublicApiKey(), apiKeyService.getPrivateApiKey());
+
+        System.out.println(response); // for debug
+
         return GSON.fromJson(response, TransactionsResponse.class);
     }
 }
