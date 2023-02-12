@@ -3,6 +3,21 @@ Simple Client for Zonda exchange API
 
 Early development stage
 
-There is working code to get public and secured API. Run test class with Your favorite IDE.
+The code allows currently to get data from public and secured API. Run test classes with Your favorite IDE.
 
-First milestone target is to get history of transactions and save essential data as CSV file. History data served by Zonda webservice had reduced precision of price and volume and was useless (not sure if they have fixed it already). 
+Milestones / todos:
+
+    1. Get complete transaction list. Save to CSV (DONE)
+
+    2. Transactions list parametrization
+        a. transactions from selected Year/time scope 
+
+        b. select only FIAT-CRYPTO transactions and CRYPTO-FIAT
+ 
+    3 .Parse numeric values and make calculations
+
+        a. Calculate tax base value for a particular Year (according to Polish Tax Law)
+ 
+    4. User Interface - console
+
+    5. CSV export - extend functionality

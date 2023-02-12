@@ -8,6 +8,7 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import pl.balwinski.model.history.Transaction;
+import pl.balwinski.model.history.TransactionsFinalResult;
 import pl.balwinski.model.history.TransactionsResponse;
 import pl.balwinski.service.ApiKeyService;
 import pl.balwinski.service.FileApiKeyService;
@@ -25,7 +26,7 @@ public class GetTransactionsAndWriteCsvTest {
 
         try (Writer writer = new FileWriter("output/transactions.csv")){
             //TODO (service): download all transactions using query params (now only default number of 10 transactions are downloaded)
-            TransactionsResponse transactionsResponse = getTransactions(service);
+            TransactionsFinalResult transactionsResponse = getTransactions(service);
 
             StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
             //TODO set order for columns and data format (date, quotation mark);
@@ -38,9 +39,8 @@ public class GetTransactionsAndWriteCsvTest {
         }
     }
 
-    private static TransactionsResponse getTransactions(ZondaService service) throws IOException {
+    private static TransactionsFinalResult getTransactions(ZondaService service) throws IOException {
         ApiKeyService apiKeyService = new FileApiKeyService();
-        String response = service.getTransactions(apiKeyService.getPublicApiKey(), apiKeyService.getPrivateApiKey());
-        return GSON.fromJson(response, TransactionsResponse.class);
+        return service.getTransactions(apiKeyService.getPublicApiKey(), apiKeyService.getPrivateApiKey());
     }
 }
