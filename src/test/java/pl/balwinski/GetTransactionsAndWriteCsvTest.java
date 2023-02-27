@@ -28,7 +28,7 @@ public class GetTransactionsAndWriteCsvTest {
             //TODO (service): download all transactions using query params (now only default number of 10 transactions are downloaded)
             TransactionsFinalResult transactionsResponse = getTransactions(service);
 
-            StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
+            StatefulBeanToCsv<Transaction> beanToCsv = new StatefulBeanToCsvBuilder<Transaction>(writer).build();
             //TODO set order for columns and data format (date, quotation mark);
             beanToCsv.write(transactionsResponse.getItems());
 

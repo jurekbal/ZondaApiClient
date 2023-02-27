@@ -9,6 +9,9 @@ Milestones / todos:
 
     1. Get complete transaction list. Save to CSV (DONE)
 
+    1A. Operate on local data (saved CSV, later maybe database) rather than request API every time application starts.
+        Update local data (synchronisation) on user request only.
+
     2. Transactions list parametrization
         a. transactions from selected Year/time scope 
 
