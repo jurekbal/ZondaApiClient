@@ -8,6 +8,7 @@ import okhttp3.Response;
 import pl.balwinski.model.history.TransactionsFinalResult;
 import pl.balwinski.model.history.TransactionsQuery;
 import pl.balwinski.model.history.TransactionsResponse;
+import pl.balwinski.model.wallet.BalanceResponse;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -31,7 +32,7 @@ public class ZondaService {
         }
     }
 
-    public String getListOfWallets(String publicApiKey, String privateApiKey) throws IOException {
+    public BalanceResponse getBalanceResponse(String publicApiKey, String privateApiKey) throws IOException {
         String operationId = UUID.randomUUID().toString();
         System.out.println("Request Operation-Id: " + operationId);
         long requestTimestamp = System.currentTimeMillis() / 1000L;
@@ -48,7 +49,8 @@ public class ZondaService {
                 .build();
         OkHttpClient client = new OkHttpClient();
         try (Response response = client.newCall(request).execute()) {
-            return Objects.requireNonNull(response.body()).string();
+            String responseBodyString = Objects.requireNonNull(response.body()).string();
+            return new Gson().fromJson(responseBodyString, BalanceResponse.class);
         }
     }
 

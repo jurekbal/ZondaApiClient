@@ -1,7 +1,5 @@
 package pl.balwinski;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import pl.balwinski.model.wallet.Balance;
 import pl.balwinski.model.wallet.BalanceResponse;
 import pl.balwinski.service.ApiKeyService;
@@ -13,21 +11,41 @@ import java.util.List;
 
 public class GetBalancesTest {
 
-    private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
     public static void main(String[] args) {
         ZondaService service = new ZondaService();
 
         try {
-            BalanceResponse balanceResponse = getWallet(service);
+            BalanceResponse balanceResponse = getBalanceResponse(service);
+            List<Balance> allBalances = balanceResponse.getBalances();
 //            System.out.println(GSON.toJson(balanceResponse));
             List<Balance> nonZeroBalances = filterOutZeroBalances(balanceResponse.getBalances());
-            System.out.println(GSON.toJson(nonZeroBalances));
+//            System.out.println(GSON.toJson(nonZeroBalances));
+
+            System.out.println("Total balances: " + allBalances.size());
+            System.out.println("Non zero balances: " + nonZeroBalances.size());
+
+            printOutFiatTickersAndFounds(nonZeroBalances);
+            printOutCryptoTickersAndFounds(nonZeroBalances);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private static void printOutFiatTickersAndFounds(List<Balance> balances) {
+        List<Balance> fiatTickers = balances.stream()
+                .filter(b -> b.getType().equals("FIAT"))
+                .toList();
+        System.out.println("Fiat currencies count:" + fiatTickers.size());
+        fiatTickers.forEach(s -> System.out.printf("%s : %s\n", s.getCurrency(), s.getAvailableFunds()));
+    }
+
+    private static void printOutCryptoTickersAndFounds(List<Balance> balances) {
+        List<Balance> fiatTickers = balances.stream()
+                .filter(b -> b.getType().equals("CRYPTO"))
+                .toList();
+        System.out.println("Crypto currencies count:" + fiatTickers.size());
+        fiatTickers.forEach(s -> System.out.printf("%s : %s\n", s.getCurrency(), s.getAvailableFunds()));
+    }
 
     private static List<Balance> filterOutZeroBalances(List<Balance> balances) {
         return balances.stream()
@@ -37,10 +55,8 @@ public class GetBalancesTest {
                 .toList();
     }
 
-    private static BalanceResponse getWallet(ZondaService service) throws IOException {
+    private static BalanceResponse getBalanceResponse(ZondaService service) throws IOException {
         ApiKeyService apiKeyService = new FileApiKeyService();
-
-        String response = service.getListOfWallets(apiKeyService.getPublicApiKey(), apiKeyService.getPrivateApiKey());
-        return new Gson().fromJson(response, BalanceResponse.class);
+        return service.getBalanceResponse(apiKeyService.getPublicApiKey(), apiKeyService.getPrivateApiKey());
     }
 }
