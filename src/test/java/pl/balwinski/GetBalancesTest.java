@@ -29,6 +29,13 @@ public class GetBalancesTest {
         }
     }
 
+    static List<Balance> filterOutZeroBalances(List<Balance> balances) {
+        return balances.stream()
+                .filter(b -> !(b.getAvailableFunds().equals("0E-8") &&
+                        b.getTotalFunds().equals("0E-8") &&
+                        b.getLockedFunds().equals("0E-8")))
+                .toList();
+    }
     private static void printOutFiatTickersAndFounds(List<Balance> balances) {
         List<Balance> fiatTickers = balances.stream()
                 .filter(b -> b.getType().equals("FIAT"))
@@ -43,14 +50,6 @@ public class GetBalancesTest {
                 .toList();
         System.out.println("Crypto currencies count:" + fiatTickers.size());
         fiatTickers.forEach(s -> System.out.printf("%s : %s\n", s.getCurrency(), s.getAvailableFunds()));
-    }
-
-    private static List<Balance> filterOutZeroBalances(List<Balance> balances) {
-        return balances.stream()
-                .filter(b -> !(b.getAvailableFunds().equals("0E-8") &&
-                        b.getTotalFunds().equals("0E-8") &&
-                        b.getLockedFunds().equals("0E-8")))
-                .toList();
     }
 
 }

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.List;
 
-public class LoadTransactionsFromLocalCsvFileTest {
+public class LoadTransactionsFromCsvTest {
 
     public static void main(String[] args) {
 
