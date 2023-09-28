@@ -7,11 +7,23 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import pl.balwinski.model.history.Transaction;
+import pl.balwinski.model.wallet.Balance;
 
 import java.io.*;
 import java.util.List;
 
 public class CsvService {
+
+    public void writeTransactions(List<Transaction> transactions, String fileName)
+            throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+
+        try (Writer writer = new FileWriter(fileName)) {
+
+            //TODO set order for columns and data format (date, quotation mark);
+            StatefulBeanToCsv<Transaction> beanToCsv = new StatefulBeanToCsvBuilder<Transaction>(writer).build();
+            beanToCsv.write(transactions);
+        }
+    }
 
     public List<Transaction> loadTransactions(String filaName) throws IOException {
         try (Reader reader = new FileReader(filaName)) {
@@ -25,14 +37,26 @@ public class CsvService {
         }
     }
 
-    public void writeTransactions(List<Transaction> transactions, String fileName)
+    public void writeBalances(List<Balance> balances, String fileName)
             throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
 
         try (Writer writer = new FileWriter(fileName)) {
 
             //TODO set order for columns and data format (date, quotation mark);
-            StatefulBeanToCsv<Transaction> beanToCsv = new StatefulBeanToCsvBuilder<Transaction>(writer).build();
-            beanToCsv.write(transactions);
+            StatefulBeanToCsv<Balance> beanToCsv = new StatefulBeanToCsvBuilder<Balance>(writer).build();
+            beanToCsv.write(balances);
+        }
+    }
+
+    public List<Balance> loadBalances(String filaName) throws IOException {
+        try (Reader reader = new FileReader(filaName)) {
+
+            CsvToBean<Balance> csvToBean = new CsvToBeanBuilder<Balance>(reader)
+                    .withType(Balance.class)
+                    .withOrderedResults(false)
+                    .build();
+            return csvToBean.parse();
+
         }
     }
 }

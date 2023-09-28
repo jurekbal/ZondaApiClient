@@ -18,7 +18,10 @@ import java.util.UUID;
 public class ZondaService {
 
     public static final String TRANSACTIONS_API_BASE_URL = "https://api.zonda.exchange/rest/trading/history/transactions";
+    public static final String BALANCES_API_BASE_URL = "https://api.zonda.exchange/rest/balances/BITBAY/balance";
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private final ApiKeyService apiKeyService = new FileApiKeyService();
 
 
     public String getPublicOpenApi() throws IOException {
@@ -32,14 +35,18 @@ public class ZondaService {
         }
     }
 
-    public BalanceResponse getBalanceResponse(String publicApiKey, String privateApiKey) throws IOException {
+    public BalanceResponse getBalanceResponse() throws IOException {
+
+        String publicApiKey = apiKeyService.getPublicApiKey();
+        String privateApiKey = apiKeyService.getPrivateApiKey();
+
         String operationId = UUID.randomUUID().toString();
         System.out.println("Request Operation-Id: " + operationId);
         long requestTimestamp = System.currentTimeMillis() / 1000L;
         System.out.println("Current timestamp: " + requestTimestamp);
 
         Request request = new Request.Builder()
-                .url("https://api.zonda.exchange/rest/balances/BITBAY/balance")
+                .url(BALANCES_API_BASE_URL)
                 .method("GET", null)
                 .header("API-Key", publicApiKey)
                 .header("API-Hash", APIHashGenerator.generate(publicApiKey + requestTimestamp, privateApiKey))
@@ -54,7 +61,10 @@ public class ZondaService {
         }
     }
 
-    public TransactionsFinalResult getTransactions(String publicApiKey, String privateApiKey) throws IOException {
+    public TransactionsFinalResult getTransactions() throws IOException {
+
+        String publicApiKey = apiKeyService.getPublicApiKey();
+        String privateApiKey = apiKeyService.getPrivateApiKey();
 
         TransactionsFinalResult result = new TransactionsFinalResult();
 

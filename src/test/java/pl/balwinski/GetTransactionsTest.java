@@ -3,8 +3,6 @@ package pl.balwinski;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import pl.balwinski.model.history.TransactionsFinalResult;
-import pl.balwinski.service.ApiKeyService;
-import pl.balwinski.service.FileApiKeyService;
 import pl.balwinski.service.ZondaService;
 
 import java.io.IOException;
@@ -16,7 +14,7 @@ public class GetTransactionsTest {
         ZondaService service = new ZondaService();
 
         try {
-            TransactionsFinalResult transactions = getTransactions(service);
+            TransactionsFinalResult transactions = service.getTransactions();
             System.out.printf("Obtained items list size: %d\n", transactions.getItems().size());
 //            System.out.println(GSON.toJson(transactions));
 
@@ -25,8 +23,4 @@ public class GetTransactionsTest {
         }
     }
 
-    private static TransactionsFinalResult getTransactions(ZondaService service) throws IOException {
-        ApiKeyService apiKeyService = new FileApiKeyService();
-        return service.getTransactions(apiKeyService.getPublicApiKey(), apiKeyService.getPrivateApiKey());
-    }
 }

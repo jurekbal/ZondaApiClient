@@ -2,8 +2,6 @@ package pl.balwinski;
 
 import pl.balwinski.model.wallet.Balance;
 import pl.balwinski.model.wallet.BalanceResponse;
-import pl.balwinski.service.ApiKeyService;
-import pl.balwinski.service.FileApiKeyService;
 import pl.balwinski.service.ZondaService;
 
 import java.io.IOException;
@@ -15,7 +13,7 @@ public class GetBalancesTest {
         ZondaService service = new ZondaService();
 
         try {
-            BalanceResponse balanceResponse = getBalanceResponse(service);
+            BalanceResponse balanceResponse = service.getBalanceResponse();
             List<Balance> allBalances = balanceResponse.getBalances();
 //            System.out.println(GSON.toJson(balanceResponse));
             List<Balance> nonZeroBalances = filterOutZeroBalances(balanceResponse.getBalances());
@@ -55,8 +53,4 @@ public class GetBalancesTest {
                 .toList();
     }
 
-    private static BalanceResponse getBalanceResponse(ZondaService service) throws IOException {
-        ApiKeyService apiKeyService = new FileApiKeyService();
-        return service.getBalanceResponse(apiKeyService.getPublicApiKey(), apiKeyService.getPrivateApiKey());
-    }
 }
