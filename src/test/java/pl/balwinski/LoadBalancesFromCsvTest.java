@@ -6,6 +6,8 @@ import pl.balwinski.service.CsvService;
 import java.io.IOException;
 import java.util.List;
 
+import static pl.balwinski.GetBalancesTest.*;
+
 public class LoadBalancesFromCsvTest {
 
     public static void main(String[] args) {
@@ -14,9 +16,13 @@ public class LoadBalancesFromCsvTest {
         try {
             List<Balance> balances = csvService.loadBalances("output/balances.csv");
 
-            System.out.println("Read balances list size:" + balances.size());
-            System.out.println("************************");
-            System.out.println(balances);
+            List<Balance> nonZeroBalances = filterOutZeroBalances(balances);
+            System.out.println("Total balances: " + balances.size());
+            System.out.println("Non zero balances: " + nonZeroBalances.size());
+
+            printOutFiatTickersAndFounds(nonZeroBalances);
+            printOutCryptoTickersAndFounds(nonZeroBalances);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

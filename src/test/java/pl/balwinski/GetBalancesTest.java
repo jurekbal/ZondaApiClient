@@ -15,10 +15,8 @@ public class GetBalancesTest {
         try {
             BalanceResponse balanceResponse = service.getBalanceResponse();
             List<Balance> allBalances = balanceResponse.getBalances();
-//            System.out.println(GSON.toJson(balanceResponse));
-            List<Balance> nonZeroBalances = filterOutZeroBalances(balanceResponse.getBalances());
-//            System.out.println(GSON.toJson(nonZeroBalances));
 
+            List<Balance> nonZeroBalances = filterOutZeroBalances(balanceResponse.getBalances());
             System.out.println("Total balances: " + allBalances.size());
             System.out.println("Non zero balances: " + nonZeroBalances.size());
 
@@ -36,7 +34,7 @@ public class GetBalancesTest {
                         b.getLockedFunds().equals("0E-8")))
                 .toList();
     }
-    private static void printOutFiatTickersAndFounds(List<Balance> balances) {
+    static void printOutFiatTickersAndFounds(List<Balance> balances) {
         List<Balance> fiatTickers = balances.stream()
                 .filter(b -> b.getType().equals("FIAT"))
                 .toList();
@@ -44,7 +42,7 @@ public class GetBalancesTest {
         fiatTickers.forEach(s -> System.out.printf("%s : %s\n", s.getCurrency(), s.getAvailableFunds()));
     }
 
-    private static void printOutCryptoTickersAndFounds(List<Balance> balances) {
+    static void printOutCryptoTickersAndFounds(List<Balance> balances) {
         List<Balance> fiatTickers = balances.stream()
                 .filter(b -> b.getType().equals("CRYPTO"))
                 .toList();
