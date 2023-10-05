@@ -1,4 +1,4 @@
-package pl.balwinski;
+package pl.balwinski.tools;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,7 +7,7 @@ import pl.balwinski.service.ZondaService;
 
 import java.io.IOException;
 
-public class PublicApiTest {
+public class GetFromPublicApi {
 
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static void main(String[] args) {

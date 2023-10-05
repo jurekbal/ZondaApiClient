@@ -1,4 +1,4 @@
-package pl.balwinski;
+package pl.balwinski.tools;
 
 import pl.balwinski.model.wallet.Balance;
 import pl.balwinski.service.CsvService;
@@ -6,9 +6,9 @@ import pl.balwinski.service.CsvService;
 import java.io.IOException;
 import java.util.List;
 
-import static pl.balwinski.GetBalancesTest.*;
+import static pl.balwinski.tools.GetBalances.*;
 
-public class LoadBalancesFromCsvTest {
+public class LoadBalancesFromCsv {
 
     public static void main(String[] args) {
 

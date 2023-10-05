@@ -1,4 +1,4 @@
-package pl.balwinski;
+package pl.balwinski.tools;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
@@ -8,7 +8,7 @@ import pl.balwinski.service.ZondaService;
 
 import java.io.IOException;
 
-public class GetTransactionsAndWriteCsvTest {
+public class GetTransactionsAndWriteCsv {
 
     public static void main(String[] args) {
 

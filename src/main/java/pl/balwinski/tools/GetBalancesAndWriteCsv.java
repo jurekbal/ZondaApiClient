@@ -1,4 +1,4 @@
-package pl.balwinski;
+package pl.balwinski.tools;
 
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
@@ -10,9 +10,9 @@ import pl.balwinski.service.ZondaService;
 import java.io.IOException;
 import java.util.List;
 
-import static pl.balwinski.GetBalancesTest.filterOutZeroBalances;
+import static pl.balwinski.tools.GetBalances.filterOutZeroBalances;
 
-public class GetBalancesAndWriteCsvTest {
+public class GetBalancesAndWriteCsv {
 
     public static void main(String[] args) {
         ZondaService service = new ZondaService();

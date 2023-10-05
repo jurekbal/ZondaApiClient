@@ -1,4 +1,4 @@
-package pl.balwinski;
+package pl.balwinski.tools;
 
 import pl.balwinski.model.history.Transaction;
 import pl.balwinski.service.CsvService;
@@ -6,7 +6,7 @@ import pl.balwinski.service.CsvService;
 import java.io.IOException;
 import java.util.List;
 
-public class LoadTransactionsFromCsvTest {
+public class LoadTransactionsFromCsv {
 
     public static void main(String[] args) {
 

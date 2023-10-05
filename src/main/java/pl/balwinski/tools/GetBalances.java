@@ -1,4 +1,4 @@
-package pl.balwinski;
+package pl.balwinski.tools;
 
 import pl.balwinski.model.wallet.Balance;
 import pl.balwinski.model.wallet.BalanceResponse;
@@ -7,7 +7,7 @@ import pl.balwinski.service.ZondaService;
 import java.io.IOException;
 import java.util.List;
 
-public class GetBalancesTest {
+public class GetBalances {
 
     public static void main(String[] args) {
         ZondaService service = new ZondaService();

@@ -1,4 +1,4 @@
-package pl.balwinski;
+package pl.balwinski.tools;
 
 import pl.balwinski.model.history.DecodedTransaction;
 import pl.balwinski.model.history.Transaction;
@@ -8,7 +8,7 @@ import pl.balwinski.service.TaxBaseCalculator;
 import java.io.IOException;
 import java.util.List;
 
-public class LoadTransactionsFromCsvAndCalcTaxBaseTest {
+public class LoadTransactionsFromCsvAndCalcTaxBase {
 
     public static void main(String[] args) {
 
