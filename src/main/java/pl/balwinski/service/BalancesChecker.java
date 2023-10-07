@@ -1,6 +1,7 @@
 package pl.balwinski.service;
 
 import pl.balwinski.model.wallet.Balance;
+import pl.balwinski.model.wallet.BalancesCheckResult;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,23 +20,39 @@ public class BalancesChecker {
      *                     but: AVAILABLEFUNDS, LOCKEDFUNDS, TOTALFUNDS can differ
      * @param localBalances - Balances list obtained from local storage/database
      * @param apiBalances - Balances list obtained from API
-     * @return true if check is positive and lists can be further processed; false in case of serious mismatch
+     * @return BalancesCheckResult object with status, check messages, newBalances list, orphanBalances list
      */
-    public static boolean checkBalances(List<Balance> localBalances, List<Balance> apiBalances) {
-        var result = true;
+    public BalancesCheckResult check(List<Balance> localBalances, List<Balance> apiBalances) {
 
-        if (localBalances == null || apiBalances == null) {
-            System.out.println("ERROR: one of balance list is null");
-            return false;
+        BalancesCheckResult result = new BalancesCheckResult();
+
+        // check for null arguments
+        if (localBalances == null) {
+            result.setError("local balance list is null");
+            return result;
         }
-        System.out.printf("localBalances size: %d; apiBalances size: %d\n", localBalances.size(), apiBalances.size());
+        if (apiBalances == null) {
+            result.setError("api balance list is null");
+            return result;
+        }
+
+        // check for empty lists argument
+        if (localBalances.isEmpty()) {
+            result.setWarning("local balance list is empty");
+        }
+        if (apiBalances.isEmpty()) {
+            result.setWarning("api balance list is empty");
+        }
+
+        result.setInfoMessage(String.format("localBalances size: %d; apiBalances size: %d\n",
+                localBalances.size(), apiBalances.size()));
 
         //check for dupes in localBalances
         Set<String> localCurrenciesSet = new HashSet<>();
         for (Balance b : localBalances) {
             if (localCurrenciesSet.contains(b.getCurrency())) {
-                System.out.println("ERROR: duplicated currency found in localBalances list: " + b.getCurrency());
-                return false;
+                result.setError("duplicated currency found in localBalances list: " + b.getCurrency());
+                return result;
             }
             localCurrenciesSet.add(b.getCurrency());
         }
@@ -48,8 +65,8 @@ public class BalancesChecker {
 
             //check for dupes in apiBalances
             if (apiBalancesCurrenciesSet.contains(apiBal.getCurrency())) {
-                System.out.println("ERROR: duplicated currency found in apiBalances list: " + apiBal.getCurrency());
-                return false;
+                result.setError("duplicated currency found in apiBalances list: " + apiBal.getCurrency());
+                return result;
             }
             apiBalancesCurrenciesSet.add(apiBal.getCurrency());
 
@@ -58,43 +75,45 @@ public class BalancesChecker {
 
             // check if there is no more than one
             if (foundBalances.size() > 1) {
-                System.out.printf("ERROR: %d balances with currency %s found locally\n%s\n",
-                        foundBalances.size(), apiBal.getCurrency(), foundBalances);
-                return false;
+                result.setError(String.format("ERROR: %d balances with currency %s found locally\n%s\n",
+                        foundBalances.size(), apiBal.getCurrency(), foundBalances));
+                return result;
             }
 
             // not found locally
             if (foundBalances.isEmpty()) {
-                System.out.printf("INFO: New currency %s found in API list. It was not found locally.\n", apiBal.getCurrency());
+                result.setInfoMessage(String.format("New currency %s found in API list. It was not found locally.\n",
+                        apiBal.getCurrency()));
                 newBalances.add(apiBal);
             }
 
             // verify if found balance is the same in structural data
-            boolean mismatch = false;
             if (foundBalances.size() == 1) {
                 var foundBalance = foundBalances.get(0);
                 if (!foundBalance.getId().equals(apiBal.getId())) {
-                    System.out.println("ERROR: Balance ID mismatch");
-                    mismatch = true;
+                    result.setError(
+                            String.format("Balance ID mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                                    foundBalance, apiBal));
                 }
                 if (!foundBalance.getUserId().equals(apiBal.getUserId())) {
-                    System.out.println("ERROR: Balance USERID mismatch");
-                    mismatch = true;
+                    result.setError(
+                            String.format("Balance USERID mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                                    foundBalance, apiBal));
                 }
                 if (!foundBalance.getType().equals(apiBal.getType())) {
-                    System.out.println("ERROR: Balance TYPE mismatch");
-                    mismatch = true;
+                    result.setError(
+                            String.format("Balance TYPE mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                                    foundBalance, apiBal));
                 }
                 if (!foundBalance.getBalanceEngine().equals(apiBal.getBalanceEngine())) {
-                    System.out.println("ERROR: Balance BALANCEENGINE mismatch");
-                    mismatch = true;
+                    result.setError(
+                            String.format("Balance BALANCEENGINE mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                                    foundBalance, apiBal));
+
                 }if (!foundBalance.getName().equals(apiBal.getName())) {
-                    System.out.println("ERROR: Balance NAME mismatch");
-                    mismatch = true;
-                }
-                if (mismatch) {
-                    printBalances(foundBalance, apiBal);
-                    result = false;
+                    result.setError(
+                            String.format("Balance NAME mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                                    foundBalance, apiBal));
                 }
             }
         }
@@ -113,19 +132,19 @@ public class BalancesChecker {
             }
         }
         if (localOrphanBalances.size() > 0) {
-            System.out.printf("There are balances in local list which are not present on API list:\n%s", localOrphanBalances);
+            result.setWarning(String.format("There are balances in local list which are not present on API list:\n%s",
+                    localOrphanBalances));
         }
 
-        System.out.println("BALANCES CHECK SUMMARY:");
-        System.out.println("New balances on API list: " + newBalances.size());
-        System.out.println("Local orphans found: " + localBalances.size());
-        System.out.println("Balances check result is " + (result ? "positive" : "negative"));
+        result.setInfoMessage(String.format("""
+                        BALANCES CHECK SUMMARY:
+                        New balances on API list: %d
+                        Local orphans found: %d
+                        Balances check status is %s
+                        """,
+                newBalances.size(), localBalances.size(), result.getStatus().name()));
 
         return result;
-    }
-
-    private static void printBalances(Balance foundBalance, Balance apiBal) {
-        System.out.printf("Local balance entry:%s\nAPI Balance entry  :%s", foundBalance, apiBal);
     }
 
     private static List<Balance> findBalancesByCurrency(Balance apiBalance, List<Balance> localBalances) {
