@@ -92,22 +92,22 @@ public class BalancesChecker {
                 var foundBalance = foundBalances.get(0);
                 if (!foundBalance.getId().equals(apiBal.getId())) {
                     result.setError(
-                            String.format("Balance ID mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                            String.format("Balance ID mismatch:\nLocal balance entry:%s\nAPI Balance entry:%s\n",
                                     foundBalance, apiBal));
                 }
                 if (!foundBalance.getUserId().equals(apiBal.getUserId())) {
                     result.setError(
-                            String.format("Balance USERID mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                            String.format("Balance USERID mismatch:\nLocal balance entry:%s\nAPI Balance entry:%s\n",
                                     foundBalance, apiBal));
                 }
                 if (!foundBalance.getType().equals(apiBal.getType())) {
                     result.setError(
-                            String.format("Balance TYPE mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                            String.format("Balance TYPE mismatch:\nLocal balance entry:%s\nAPI Balance entry:%s\n",
                                     foundBalance, apiBal));
                 }
                 if (!foundBalance.getBalanceEngine().equals(apiBal.getBalanceEngine())) {
                     result.setError(
-                            String.format("Balance BALANCEENGINE mismatch:\nLocal balance entry:%s\nAPI Balance entry  :%s\n",
+                            String.format("Balance BALANCEENGINE mismatch:\nLocal balance entry:%s\nAPI Balance entry:%s\n",
                                     foundBalance, apiBal));
 
                 }if (!foundBalance.getName().equals(apiBal.getName())) {
@@ -136,13 +136,17 @@ public class BalancesChecker {
                     localOrphanBalances));
         }
 
+        result.addAllNewBalances(newBalances);
+        result.addAllOrphanBalances(localOrphanBalances);
+        result.setStatusOK();
+
         result.setInfoMessage(String.format("""
                         BALANCES CHECK SUMMARY:
                         New balances on API list: %d
                         Local orphans found: %d
                         Balances check status is %s
                         """,
-                newBalances.size(), localBalances.size(), result.getStatus().name()));
+                newBalances.size(), localOrphanBalances.size(), result.getStatus().name()));
 
         return result;
     }

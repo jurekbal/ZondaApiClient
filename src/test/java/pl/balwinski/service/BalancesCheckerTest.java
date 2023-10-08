@@ -1,10 +1,13 @@
 package pl.balwinski.service;
 
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import org.junit.jupiter.api.Test;
 import pl.balwinski.model.wallet.Balance;
 import pl.balwinski.model.wallet.BalanceCheckStatus;
 import pl.balwinski.model.wallet.BalancesCheckResult;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +24,6 @@ class BalancesCheckerTest {
         BalancesCheckResult bothArgsNull = checker.check(null, null);
         BalancesCheckResult localListNull = checker.check(null, new ArrayList<>());
         BalancesCheckResult apiListIsNull = checker.check(new ArrayList<>(), null);
-        BalancesCheckResult bothNotNull = checker.check(new ArrayList<>(), new ArrayList<>());
 
         //then
         assertThat(bothArgsNull.getStatus()).as("Both arguments null must give ERROR status")
@@ -69,12 +71,68 @@ class BalancesCheckerTest {
                 .isEqualByComparingTo(BalanceCheckStatus.WARNING);
     }
 
-    // TODO rest of testcases
     // CASE 1 Both lists The same
+    @Test
+    void checkBothListsTheSame() {
+        //give
+        List<Balance> localBalances = loadBalancesFromResourcesCsv("balances-local.csv");
+        List<Balance> apiBalances = loadBalancesFromResourcesCsv("balances-local-copy.csv");
+
+        // basic check of test data
+        assertThat(localBalances.size()).isEqualTo(apiBalances.size());
+        assertThat(localBalances.isEmpty()).isFalse();
+        assertThat(apiBalances.isEmpty()).isFalse();
+
+        //when
+        BalancesChecker balancesChecker = new BalancesChecker();
+        BalancesCheckResult result = balancesChecker.check(localBalances, apiBalances);
+
+        //then
+        assertThat(result.getStatus()).isEqualByComparingTo(BalanceCheckStatus.OK);
+        assertThat(result.getNewBalancesCopy().isEmpty()).isTrue();
+        assertThat(result.getOrphanBalancesCopy().isEmpty()).isTrue();
+    }
+
     // CASE 2 New balances on api list
+    @Test
+    void checkNewBalancesOnApiList() {
+        //give
+        List<Balance> localBalances = loadBalancesFromResourcesCsv("balances-local.csv");
+        List<Balance> apiBalances = loadBalancesFromResourcesCsv("balances-api-new.csv");
+
+        // basic check of test data
+        assertThat(apiBalances.size()).isGreaterThan(localBalances.size());
+        assertThat(localBalances.isEmpty()).isFalse();
+        assertThat(apiBalances.isEmpty()).isFalse();
+
+        //when
+        BalancesChecker balancesChecker = new BalancesChecker();
+        BalancesCheckResult result = balancesChecker.check(localBalances, apiBalances);
+
+        //then
+        System.out.println(result.getMessagesCopy());
+        assertThat(result.getStatus()).isEqualByComparingTo(BalanceCheckStatus.OK);
+        assertThat(result.getNewBalancesCopy().size()).isEqualTo(5);
+        assertThat(result.getOrphanBalancesCopy().isEmpty()).isTrue();
+
+    }
+    //TODO
     // case 3 orphan balances on local list
-    // case 4 duplicated entries on lists
+    // case 4 duplicated entries on any of the list
     // case 5 immutable values mismatch between local and api
     // case 6 mutable values changed (add to checker result)
+
+    private List<Balance> loadBalancesFromResourcesCsv(String fileName) {
+        File file = new File(getClass().getClassLoader().getResource(fileName).getFile());
+        try (Reader reader = new FileReader(file)) {
+            CsvToBean<Balance> csvToBean = new CsvToBeanBuilder<Balance>(reader)
+                    .withType(Balance.class)
+                    .withOrderedResults(false)
+                    .build();
+            return csvToBean.parse();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception.getMessage());
+        }
+    }
 
 }

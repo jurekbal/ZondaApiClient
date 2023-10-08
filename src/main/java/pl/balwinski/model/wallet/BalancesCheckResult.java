@@ -38,30 +38,18 @@ public class BalancesCheckResult {
         return status;
     }
 
-    private void setStatusOK() {
+    public void setStatusOK() {
         if (status == null || status.ordinal() < BalanceCheckStatus.OK.ordinal()) {
             this.status = BalanceCheckStatus.OK;
         }
     }
 
-    private void elevateStatusToWarning() {
-        if (status.ordinal() < BalanceCheckStatus.WARNING.ordinal()) {
-            this.status = BalanceCheckStatus.WARNING;
-        }
-    }
-
-    private void elevateStatusToError() {
-        if (status.ordinal() < BalanceCheckStatus.ERROR.ordinal()) {
-            this.status = BalanceCheckStatus.ERROR;
-        }
-    }
-
-    public void addNewBalance(Balance balance) {
-        this.newBalances.add(balance);
-    }
-
-    public void addAllBalances(List<Balance> balances) {
+    public void addAllNewBalances(List<Balance> balances) {
         this.newBalances.addAll(balances);
+    }
+
+    public void addAllOrphanBalances(List<Balance> balances) {
+        this.orphanBalances.addAll(balances);
     }
 
     public void setInfoMessage(String message) {
@@ -78,5 +66,16 @@ public class BalancesCheckResult {
         this.messages.add("ERROR: " + message);
     }
 
+    private void elevateStatusToWarning() {
+        if (status.ordinal() < BalanceCheckStatus.WARNING.ordinal()) {
+            this.status = BalanceCheckStatus.WARNING;
+        }
+    }
+
+    private void elevateStatusToError() {
+        if (status.ordinal() < BalanceCheckStatus.ERROR.ordinal()) {
+            this.status = BalanceCheckStatus.ERROR;
+        }
+    }
 
 }
