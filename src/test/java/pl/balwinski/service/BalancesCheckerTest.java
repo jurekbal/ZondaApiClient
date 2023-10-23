@@ -10,6 +10,8 @@ import pl.balwinski.model.wallet.BalancesCheckResult;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -39,8 +41,6 @@ class BalancesCheckerTest {
         System.out.println(apiListIsNull.getMessagesCopy());
 
     }
-
-
 
     @Test
     void checkWarningsForEmptyLists() {
@@ -96,12 +96,54 @@ class BalancesCheckerTest {
     // CASE 2 New balances on api list
     @Test
     void checkNewBalancesOnApiList() {
-        //give
+        //given
         List<Balance> localBalances = loadBalancesFromResourcesCsv("balances-local.csv");
         List<Balance> apiBalances = loadBalancesFromResourcesCsv("balances-api-new.csv");
 
         // basic check of test data
         assertThat(apiBalances.size()).isGreaterThan(localBalances.size());
+        assertThat(apiBalances.isEmpty()).isFalse();
+
+        //when
+        BalancesChecker balancesChecker = new BalancesChecker();
+        BalancesCheckResult result = balancesChecker.check(localBalances, apiBalances);
+
+        //then
+        assertThat(result.getStatus()).isEqualByComparingTo(BalanceCheckStatus.OK);
+        assertThat(result.getNewBalancesCopy().size()).isEqualTo(5);
+        assertThat(result.getOrphanBalancesCopy().isEmpty()).isTrue();
+
+    }
+
+    // case 3 orphan balances on local list
+    @Test
+    void checkOrphanBalancesOnLocalList() {
+        //given
+        List<Balance> localBalances = loadBalancesFromResourcesCsv("balances-local.csv");
+        List<Balance> apiBalances = loadBalancesFromResourcesCsv("balances-api-lack2.csv");
+
+        // basic check of test data
+        assertThat(apiBalances.size()).isLessThan(localBalances.size());
+        assertThat(apiBalances.isEmpty()).isFalse();
+
+        //when
+        BalancesChecker balancesChecker = new BalancesChecker();
+        BalancesCheckResult result = balancesChecker.check(localBalances, apiBalances);
+
+        //then
+        assertThat(result.getStatus()).isEqualByComparingTo(BalanceCheckStatus.WARNING);
+        assertThat(result.getOrphanBalancesCopy().size()).isEqualTo(2);
+        assertThat(result.getNewBalancesCopy().isEmpty()).isTrue();
+    }
+
+    // case 4 duplicated entries on any of the list
+    @Test
+    void noDuplicatesOnAnyList() {
+        //given
+        List<Balance> apiBalances = loadBalancesFromResourcesCsv("balances-api-2xduplicates.csv");
+        List<Balance> localBalances = loadBalancesFromResourcesCsv("balances-local-duplicates.csv");
+
+        // basic check of test data
         assertThat(localBalances.isEmpty()).isFalse();
         assertThat(apiBalances.isEmpty()).isFalse();
 
@@ -110,17 +152,76 @@ class BalancesCheckerTest {
         BalancesCheckResult result = balancesChecker.check(localBalances, apiBalances);
 
         //then
-        System.out.println(result.getMessagesCopy());
-        assertThat(result.getStatus()).isEqualByComparingTo(BalanceCheckStatus.OK);
-        assertThat(result.getNewBalancesCopy().size()).isEqualTo(5);
-        assertThat(result.getOrphanBalancesCopy().isEmpty()).isTrue();
-
+        assertThat(result.getStatus()).isEqualByComparingTo(BalanceCheckStatus.ERROR);
+        assertThat(result.getMessagesCopy()).contains("ERROR: duplicated currency found in apiBalances list: SOL");
+        assertThat(result.getMessagesCopy()).contains("ERROR: duplicated currency found in apiBalances list: SHIB");
+        assertThat(result.getMessagesCopy()).contains("ERROR: duplicated currency found in localBalances list: ATRI");
+        result.getMessagesCopy().forEach(System.out::println);
     }
-    //TODO
-    // case 3 orphan balances on local list
-    // case 4 duplicated entries on any of the list
-    // case 5 immutable values mismatch between local and api
+
+    // case 5 immutable values mismatch between local and api. We expect that ID, BALANCEENGINE, NAME, TYPE, USERID are the same
+    @Test
+    void immutableValuesAreTheSameOnBothLists() {
+        //give
+        List<Balance> localBalances = loadBalancesFromResourcesCsv("balances-local.csv");
+        List<Balance> apiBalances = loadBalancesFromResourcesCsv("balances-api-different-immutables.csv");
+
+        // basic check of test data
+        assertThat(localBalances.size()).isEqualTo(apiBalances.size());
+        assertThat(localBalances.isEmpty()).isFalse();
+        assertThat(apiBalances.isEmpty()).isFalse();
+
+        //when
+        BalancesChecker balancesChecker = new BalancesChecker();
+        BalancesCheckResult result = balancesChecker.check(localBalances, apiBalances);
+
+        //then
+        assertThat(result.getStatus()).isEqualByComparingTo(BalanceCheckStatus.ERROR);
+        assertThat(result.getMessagesCopy()).contains("""
+                ERROR: Balance BALANCEENGINE mismatch:
+                Local balance entry:Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8466, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0E-8, totalFunds=0E-8, lockedFunds=0E-8, currency=BCC, type=CRYPTO, name=BCC, balanceEngine=BITBAY)
+                API Balance entry:Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8466, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0E-8, totalFunds=0E-8, lockedFunds=0E-8, currency=BCC, type=CRYPTO, name=BCC, balanceEngine=KRAKEN)""");
+        assertThat(result.getMessagesCopy()).contains("""
+                ERROR: Balance ID mismatch:
+                Local balance entry:Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8467, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0.08521334, totalFunds=0.08521334, lockedFunds=0E-8, currency=MKR, type=CRYPTO, name=MKR, balanceEngine=BITBAY)
+                API Balance entry:Balance(id=8e9e9be4-dbbf-41e6-97fb-c00c64bd8467, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0.08521334, totalFunds=0.08521334, lockedFunds=0E-8, currency=MKR, type=CRYPTO, name=MKR, balanceEngine=BITBAY)""");
+        assertThat(result.getMessagesCopy()).contains("""
+                ERROR: Balance NAME mismatch:
+                Local balance entry:Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8468, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0E-8, totalFunds=0E-8, lockedFunds=0E-8, currency=PSG, type=CRYPTO, name=PSG, balanceEngine=BITBAY)
+                API Balance entry  :Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8468, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0E-8, totalFunds=0E-8, lockedFunds=0E-8, currency=PSG, type=CRYPTO, name=ASG, balanceEngine=BITBAY)""");
+        assertThat(result.getMessagesCopy()).contains("""
+                ERROR: Balance TYPE mismatch:
+                Local balance entry:Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8469, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0E-8, totalFunds=0E-8, lockedFunds=0E-8, currency=ATRI, type=CRYPTO, name=ATRI, balanceEngine=BITBAY)
+                API Balance entry:Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8469, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0E-8, totalFunds=0E-8, lockedFunds=0E-8, currency=ATRI, type=FIAT, name=ATRI, balanceEngine=BITBAY)""");
+        assertThat(result.getMessagesCopy()).contains("""
+                ERROR: Balance USERID mismatch:
+                Local balance entry:Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8460, userId=4e9e9be4-aaaa-4444-7-c00c64bd8471, availableFunds=0E-8, totalFunds=0E-8, lockedFunds=0E-8, currency=DOGE, type=CRYPTO, name=DOGE, balanceEngine=BITBAY)
+                API Balance entry:Balance(id=4e9e9be4-dbbf-41e6-97fb-c00c64bd8460, userId=eeeeeeee-aaaa-4444-7-c00c64bd8471, availableFunds=0E-8, totalFunds=0E-8, lockedFunds=0E-8, currency=DOGE, type=CRYPTO, name=DOGE, balanceEngine=BITBAY)""");
+    }
+
     // case 6 mutable values changed (add to checker result)
+    @Test
+    void resultContainsMutableValuesThatDiffers() {
+        //give
+        List<Balance> localBalances = loadBalancesFromResourcesCsv("balances-local.csv");
+        List<Balance> apiBalances = loadBalancesFromResourcesCsv("balances-api-chg-founds.csv");
+
+        // basic check of test data
+        assertThat(localBalances.size()).isEqualTo(apiBalances.size());
+        assertThat(localBalances.isEmpty()).isFalse();
+        assertThat(apiBalances.isEmpty()).isFalse();
+
+        //when
+        BalancesChecker balancesChecker = new BalancesChecker();
+        BalancesCheckResult result = balancesChecker.check(localBalances, apiBalances);
+
+        //then
+        assertThat(result.getStatus()).isEqualByComparingTo(BalanceCheckStatus.OK);
+        List<Balance> changed = result.getChangedBalancesCopy();
+        assertThat(changed.size()).isEqualTo(3);
+        Set<String> changedCurrencies = changed.stream().map(Balance::getCurrency).collect(Collectors.toSet());
+        assertThat(changedCurrencies).containsExactlyInAnyOrderElementsOf(Set.of("SOL", "COMP", "DOGE"));
+    }
 
     private List<Balance> loadBalancesFromResourcesCsv(String fileName) {
         File file = new File(getClass().getClassLoader().getResource(fileName).getFile());
@@ -134,5 +235,4 @@ class BalancesCheckerTest {
             throw new RuntimeException(exception.getMessage());
         }
     }
-
 }

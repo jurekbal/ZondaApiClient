@@ -10,6 +10,8 @@ public class BalancesCheckResult {
     private final List<Balance> newBalances;
     private final List<Balance> orphanBalances;
 
+    private final List<Balance> changedBalances;
+
     private final List<String> messages;
 
     private BalanceCheckStatus status;
@@ -17,6 +19,7 @@ public class BalancesCheckResult {
     public BalancesCheckResult() {
         newBalances = new ArrayList<>();
         orphanBalances = new ArrayList<>();
+        changedBalances = new ArrayList<>();
         messages = new ArrayList<>();
         status = BalanceCheckStatus.NOT_SET;
     }
@@ -27,6 +30,10 @@ public class BalancesCheckResult {
 
     public List<Balance> getOrphanBalancesCopy() {
         return new ArrayList<>(orphanBalances);
+    }
+
+    public List<Balance> getChangedBalancesCopy() {
+        return new ArrayList<>(changedBalances);
     }
 
     public List<String> getMessagesCopy() {
@@ -78,4 +85,7 @@ public class BalancesCheckResult {
         }
     }
 
+    public void addChangedFounds(Balance apiBal) {
+        changedBalances.add(apiBal);
+    }
 }
