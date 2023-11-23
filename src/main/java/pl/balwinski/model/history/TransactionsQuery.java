@@ -6,4 +6,6 @@ import lombok.Data;
 public class TransactionsQuery {
 
     private String nextPageCursor;
+    private String fromTime;
+    private String toTime;
 }

@@ -61,15 +61,12 @@ public class ZondaService {
         }
     }
 
-    public TransactionsFinalResult getTransactions() throws IOException {
+    public TransactionsFinalResult getTransactions(TransactionsQuery transactionsQuery) throws IOException {
 
         String publicApiKey = apiKeyService.getPublicApiKey();
         String privateApiKey = apiKeyService.getPrivateApiKey();
 
         TransactionsFinalResult result = new TransactionsFinalResult();
-
-        TransactionsQuery transactionsQuery = new TransactionsQuery();
-        transactionsQuery.setNextPageCursor("start");
 
         //initial request
         TransactionsResponse transactionsResponse = getTransactionsPage(publicApiKey, privateApiKey, transactionsQuery);
@@ -94,6 +91,12 @@ public class ZondaService {
         return result;
     }
 
+    public TransactionsFinalResult getTransactions() throws IOException {
+        TransactionsQuery transactionsQuery = new TransactionsQuery();
+        transactionsQuery.setNextPageCursor("start");
+        return getTransactions(transactionsQuery);
+    }
+
     private TransactionsResponse getTransactionsPage(String publicApiKey, String privateApiKey, TransactionsQuery query) throws IOException {
         String operationId = UUID.randomUUID().toString();
         System.out.println("Request Operation-Id: " + operationId);
@@ -104,7 +107,7 @@ public class ZondaService {
         String queryParamsString = GSON.toJson(query);
         System.out.println("DEBUG: queryParamString: " + queryParamsString);
         String queryUrlEncoded = java.net.URLEncoder.encode(queryParamsString, Charset.defaultCharset());
-//        System.out.println("DEBUG: queryUrlEncoded: " + queryUrlEncoded);
+        System.out.println("DEBUG: queryUrlEncoded: " + queryUrlEncoded);
 
         Request request = new Request.Builder()
                 .url(TRANSACTIONS_API_BASE_URL + "?query=" + queryUrlEncoded)

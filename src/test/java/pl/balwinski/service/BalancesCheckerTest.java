@@ -220,7 +220,8 @@ class BalancesCheckerTest {
         List<Balance> changed = result.getChangedBalancesCopy();
         assertThat(changed.size()).isEqualTo(3);
         Set<String> changedCurrencies = changed.stream().map(Balance::getCurrency).collect(Collectors.toSet());
-        assertThat(changedCurrencies).containsExactlyInAnyOrderElementsOf(Set.of("SOL", "COMP", "DOGE"));
+        assertThat(changed).flatExtracting(Balance::getCurrency)
+                .containsExactlyInAnyOrderElementsOf(Set.of("SOL", "COMP", "DOGE"));
     }
 
     private List<Balance> loadBalancesFromResourcesCsv(String fileName) {
