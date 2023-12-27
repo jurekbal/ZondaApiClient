@@ -13,6 +13,7 @@ import java.time.ZoneId;
 public class GetTransactions {
 
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
     public static void main(String[] args) {
         ZondaService service = new ZondaService();
 

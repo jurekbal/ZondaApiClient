@@ -15,4 +15,8 @@ public class Transaction {
     private String userAction;
     private String offerId;
     private String commissionValue;
+
+    public boolean equalsById(Transaction other) {
+        return this.id.equals(other.id);
+    }
 }
