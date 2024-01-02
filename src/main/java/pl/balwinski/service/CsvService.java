@@ -12,8 +12,9 @@ import pl.balwinski.model.wallet.Balance;
 import java.io.*;
 import java.util.List;
 
-public class CsvService {
+public class CsvService implements TransactionsStorageService, BalancesStorageService {
 
+    @Override
     public void writeTransactions(List<Transaction> transactions, String fileName)
             throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
 
@@ -25,6 +26,7 @@ public class CsvService {
         }
     }
 
+    @Override
     public List<Transaction> loadTransactions(String filaName) throws IOException {
         try (Reader reader = new FileReader(filaName)) {
 
