@@ -2,15 +2,17 @@ package pl.balwinski.tools;
 
 import pl.balwinski.model.wallet.Balance;
 import pl.balwinski.model.wallet.BalanceResponse;
-import pl.balwinski.service.ZondaService;
+import pl.balwinski.service.ZondaApiService;
 
 import java.io.IOException;
 import java.util.List;
 
+import static pl.balwinski.commons.Commons.filterOutZeroBalances;
+
 public class GetBalances {
 
     public static void main(String[] args) {
-        ZondaService service = new ZondaService();
+        ZondaApiService service = new ZondaApiService();
 
         try {
             BalanceResponse balanceResponse = service.getBalanceResponse();
@@ -27,13 +29,6 @@ public class GetBalances {
         }
     }
 
-    static List<Balance> filterOutZeroBalances(List<Balance> balances) {
-        return balances.stream()
-                .filter(b -> !(b.getAvailableFunds().equals("0E-8") &&
-                        b.getTotalFunds().equals("0E-8") &&
-                        b.getLockedFunds().equals("0E-8")))
-                .toList();
-    }
     static void printOutFiatTickersAndFounds(List<Balance> balances) {
         List<Balance> fiatTickers = balances.stream()
                 .filter(b -> b.getType().equals("FIAT"))

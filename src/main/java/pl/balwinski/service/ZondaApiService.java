@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ZondaService implements ExchangeApiService {
+public class ZondaApiService implements ExchangeApiService {
 
     public static final String TRANSACTIONS_API_BASE_URL = "https://api.zonda.exchange/rest/trading/history/transactions";
     public static final String BALANCES_API_BASE_URL = "https://api.zonda.exchange/rest/balances/BITBAY/balance";

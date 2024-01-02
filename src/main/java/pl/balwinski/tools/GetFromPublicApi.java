@@ -3,7 +3,7 @@ package pl.balwinski.tools;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import pl.balwinski.model.trading.pub.TickerResponse;
-import pl.balwinski.service.ZondaService;
+import pl.balwinski.service.ZondaApiService;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ public class GetFromPublicApi {
 
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static void main(String[] args) {
-        ZondaService service = new ZondaService();
+        ZondaApiService service = new ZondaApiService();
 
         try {
             publicApiTest(service);
@@ -20,7 +20,7 @@ public class GetFromPublicApi {
         }
     }
 
-    private static void publicApiTest(ZondaService service) throws IOException {
+    private static void publicApiTest(ZondaApiService service) throws IOException {
         String response = service.getPublicOpenApi();
         System.out.println(response);
 

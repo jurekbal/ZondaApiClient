@@ -6,6 +6,7 @@ import pl.balwinski.service.CsvService;
 import java.io.IOException;
 import java.util.List;
 
+import static pl.balwinski.commons.Commons.filterOutZeroBalances;
 import static pl.balwinski.tools.GetBalances.*;
 
 public class LoadBalancesFromCsv {

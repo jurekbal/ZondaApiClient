@@ -4,7 +4,7 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import pl.balwinski.model.history.TransactionsFinalResult;
 import pl.balwinski.service.CsvService;
-import pl.balwinski.service.ZondaService;
+import pl.balwinski.service.ZondaApiService;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ public class GetTransactionsAndWriteCsv {
 
         try {
             //TODO (service): download all transactions using query params (now only default number of 10 transactions are downloaded)
-            ZondaService service = new ZondaService();
+            ZondaApiService service = new ZondaApiService();
             TransactionsFinalResult transactionsResponse = service.getTransactions();
 
             CsvService csvService = new CsvService();

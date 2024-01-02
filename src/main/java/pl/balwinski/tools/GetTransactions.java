@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import pl.balwinski.model.history.TransactionsFinalResult;
 import pl.balwinski.model.history.TransactionsQuery;
-import pl.balwinski.service.ZondaService;
+import pl.balwinski.service.ZondaApiService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -15,7 +15,7 @@ public class GetTransactions {
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void main(String[] args) {
-        ZondaService service = new ZondaService();
+        ZondaApiService service = new ZondaApiService();
 
         try {
             TransactionsQuery transactionsQuery = new TransactionsQuery();

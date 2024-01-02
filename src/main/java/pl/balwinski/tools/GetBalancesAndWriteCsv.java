@@ -5,17 +5,17 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import pl.balwinski.model.wallet.Balance;
 import pl.balwinski.model.wallet.BalanceResponse;
 import pl.balwinski.service.CsvService;
-import pl.balwinski.service.ZondaService;
+import pl.balwinski.service.ZondaApiService;
 
 import java.io.IOException;
 import java.util.List;
 
-import static pl.balwinski.tools.GetBalances.filterOutZeroBalances;
+import static pl.balwinski.commons.Commons.filterOutZeroBalances;
 
 public class GetBalancesAndWriteCsv {
 
     public static void main(String[] args) {
-        ZondaService service = new ZondaService();
+        ZondaApiService service = new ZondaApiService();
 
         try {
             BalanceResponse balanceResponse = service.getBalanceResponse();

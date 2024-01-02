@@ -6,7 +6,7 @@ import pl.balwinski.model.history.TransactionsFinalResult;
 import pl.balwinski.model.history.TransactionsQuery;
 import pl.balwinski.service.CsvService;
 import pl.balwinski.service.TransactionsChecker;
-import pl.balwinski.service.ZondaService;
+import pl.balwinski.service.ZondaApiService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -17,7 +17,7 @@ public class GetTransactionsAndValidateWithLocal {
 
     public static void main(String[] args) throws IOException {
         CsvService csvService = new CsvService();
-        ZondaService service = new ZondaService();
+        ZondaApiService service = new ZondaApiService();
 
         //load local transactions
         List<Transaction> localTransactions = csvService.loadTransactions("output/transactions.csv");
