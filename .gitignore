@@ -25,12 +25,26 @@ hs_err_pid*
 # Maven
 target/**
 
+#Gradle
+.gradle
+**/build/
+!src/**/build/
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Avoid ignore Gradle wrappper properties
+!gradle-wrapper.properties
+
+
 ## File-based project format:
 *.iws
 
 *.iml
 .idea/
 
-local_credentials/**
+#API Keys local only
+**/local_credentials/**
 
-output
+#Data output, local database
+**/output
