@@ -21,7 +21,7 @@ public class GetFromPublicApi {
     }
 
     private static void publicApiTest(ZondaApiService service) throws IOException {
-        String response = service.getPublicOpenApi();
+        String response = service.getTradingTickerFromPublicOpenApi("BTC-PLN");
         System.out.println(response);
 
         TickerResponse tickerResponse = GSON.fromJson(response, TickerResponse.class);

@@ -24,9 +24,9 @@ public class ZondaApiService implements ExchangeApiService {
     private final ApiKeyService apiKeyService = new FileApiKeyService();
 
 
-    public String getPublicOpenApi() throws IOException{
+    public String getTradingTickerFromPublicOpenApi(String tickerPair) throws IOException{
         Request request = new Request.Builder()
-                .url("https://api.zonda.exchange/rest/trading/ticker/BTC-PLN")
+                .url("https://api.zonda.exchange/rest/trading/ticker/"+tickerPair)
                 .method("GET", null)
                 .build();
         OkHttpClient client = new OkHttpClient();

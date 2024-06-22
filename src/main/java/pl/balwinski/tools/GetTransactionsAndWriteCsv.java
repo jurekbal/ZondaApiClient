@@ -13,7 +13,6 @@ public class GetTransactionsAndWriteCsv {
     public static void main(String[] args) {
 
         try {
-            //TODO (service): download all transactions using query params (now only default number of 10 transactions are downloaded)
             ZondaApiService service = new ZondaApiService();
             TransactionsFinalResult transactionsResponse = service.getTransactions();
 

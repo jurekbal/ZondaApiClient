@@ -24,7 +24,7 @@ public class LoadTransactionsFromCsvAndCalcTaxBase {
                     .toList();
 
             TaxBaseCalculator taxBaseCalculator = new TaxBaseCalculator();
-            taxBaseCalculator.showTotalValueInPLNOfCryptoPurchaseIn2022(decodedTransactions);
+            taxBaseCalculator.showTotalValueInPlnOfCryptoPurchaseInYear(decodedTransactions, 2023);
 
         } catch (IOException e) {
             e.printStackTrace();
