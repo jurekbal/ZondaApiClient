@@ -18,24 +18,29 @@ public class TaxBaseCalculator {
 
         System.out.println("ZoneId: " + ZoneId.systemDefault());
 
-        System.out.printf("Total Tax effective transactions: %d",
+        System.out.printf("Total Tax effective transactions: %d\n",
                 countTaxEffectiveTransactionsInYear(decodedTransactions, year));
 
+        filterAndShowTransactionsInPLN(decodedTransactions, year, UserActionType.BUY, "PLN");
+        filterAndShowTransactionsInPLN(decodedTransactions, year, UserActionType.SELL, "PLN");
+    }
+
+    private static void filterAndShowTransactionsInPLN(List<DecodedTransaction> decodedTransactions, int year, UserActionType userActionType, String currency) {
         List<DecodedTransaction> buyForPlnInGivenYearTransactions = decodedTransactions.stream()
                 .filter(t -> t.getTime().getYear() == year)
-                .filter(t -> t.getMarket().getRight().equalsIgnoreCase("PLN"))
-                .filter(t -> t.getUserAction().equals(UserActionType.BUY))
+                .filter(t -> t.getMarket().getRight().equalsIgnoreCase(currency))
+                .filter(t -> t.getUserAction().equals(userActionType))
                 .toList();
 
-        System.out.println("buyForPlnInGivenYearTransactions: " + year);
+        System.out.printf("%s transactions for PLN in year: %d\n", userActionType.getValue() , year);
         buyForPlnInGivenYearTransactions.forEach(t -> {
             System.out.println(t);
-            System.out.println("Transaction value: " + t.getAmount().multiply(t.getRate()));
+            System.out.printf("%s transaction value in %s: %s\n", userActionType.getValue(), currency, t.getAmount().multiply(t.getRate()));
         });
 
         BigDecimal totalValuePln = buyForPlnInGivenYearTransactions.stream()
                 .map(t -> t.getAmount().multiply(t.getRate())).reduce(BigDecimal.ZERO, BigDecimal::add);
-        System.out.printf("TOTAL for filtered (PLN, BUY, %d): %s/n", year,totalValuePln);
+        System.out.printf("TOTAL for filtered (%s, %s, %d): %s\n", userActionType.getValue(), currency, year, totalValuePln);
     }
 
     private long countTaxEffectiveTransactionsInYear(List<DecodedTransaction> decodedTransactions, int year) {

@@ -17,8 +17,8 @@ import java.util.UUID;
 
 public class ZondaApiService implements ExchangeApiService {
 
-    public static final String TRANSACTIONS_API_BASE_URL = "https://api.zonda.exchange/rest/trading/history/transactions";
-    public static final String BALANCES_API_BASE_URL = "https://api.zonda.exchange/rest/balances/BITBAY/balance";
+    public static final String TRANSACTIONS_API_BASE_URL = "https://api.zondacrypto.exchange/rest/trading/history/transactions";
+    public static final String BALANCES_API_BASE_URL = "https://api.zondacrypto.exchange/rest/balances/BITBAY/balance";
     private final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private final ApiKeyService apiKeyService = new FileApiKeyService();
@@ -26,7 +26,7 @@ public class ZondaApiService implements ExchangeApiService {
 
     public String getTradingTickerFromPublicOpenApi(String tickerPair) throws IOException{
         Request request = new Request.Builder()
-                .url("https://api.zonda.exchange/rest/trading/ticker/"+tickerPair)
+                .url("https://api.zondacrypto.exchange/rest/trading/ticker/"+tickerPair)
                 .method("GET", null)
                 .build();
         OkHttpClient client = new OkHttpClient();

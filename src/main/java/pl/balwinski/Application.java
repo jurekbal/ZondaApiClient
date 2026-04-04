@@ -1,12 +1,12 @@
 package pl.balwinski;
 
-import pl.balwinski.data.CurrentDataset;
-import pl.balwinski.model.history.Transaction;
-import pl.balwinski.model.wallet.Balance;
+import pl.balwinski.ui.UiAction;
+import pl.balwinski.ui.UiPage;
+import pl.balwinski.ui.Option;
 
 import java.util.List;
 
-import static pl.balwinski.commons.Commons.filterOutZeroBalances;
+import static java.lang.System.exit;
 
 public class Application {
 
@@ -14,19 +14,33 @@ public class Application {
 
     public static void main(String[] args) {
         // Print out welcome greetings (one time at start)
-        System.out.println("Welcome to Zonda Exchange transaction archive and tax accounting tool");
+//        System.out.println("Welcome to Zonda Exchange transaction archive and tax accounting tool");
 
-        List<Balance> currentBalances = CurrentDataset.INSTANCE.getBalances();
-        List<Transaction> currentTransactions = CurrentDataset.INSTANCE.getTransactions();
+//        List<Balance> currentBalances = CurrentDataset.INSTANCE.getBalances();
+//        List<Transaction> currentTransactions = CurrentDataset.INSTANCE.getTransactions();
 
         // Print out current status and operation result (after each operation)
-        System.out.println("Current data set:");
-        System.out.printf("Balances (wallet) size: %d, in this %d non zero balances\n",
-                currentBalances.size(), filterOutZeroBalances(currentBalances).size());
-        System.out.printf("Transactions entries size: %d\n", currentTransactions.size());
+//        System.out.println("Current data set:");
+//        System.out.printf("Balances (wallet) size: %d, in this %d non zero balances\n",
+//                currentBalances.size(), filterOutZeroBalances(currentBalances).size());
+//        System.out.printf("Transactions entries size: %d\n", currentTransactions.size());
 
-        // Print out menu options and prompt for option
-        System.out.println("Select option:");
+        UiPage mainPage = new UiPage();
+        UiAction exitAction = () -> {
+            System.out.println("Good bye");
+            exit(0);
+            return null;
+        };
+        UiAction printHelloAction = () -> {
+            System.out.println("Hello user");
+            return("printHelloAction execution ended");
+        };
+        Option exitOption = new Option("0", "Exit", exitAction, null);
+        Option helloOption = new Option("1", "Greet", printHelloAction, mainPage);
+        List<Option> options = List.of(exitOption, helloOption);
+        mainPage.setName("Main Page");
+        mainPage.setOptions(options);
+        mainPage.runPage();
 
         /*TODO Options to implement:
         1. Load data from storage

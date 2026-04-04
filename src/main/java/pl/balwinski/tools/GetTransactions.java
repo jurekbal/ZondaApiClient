@@ -21,8 +21,8 @@ public class GetTransactions {
             TransactionsQuery transactionsQuery = new TransactionsQuery();
             transactionsQuery.setNextPageCursor("start");
             ZoneId zoneId = ZoneId.systemDefault();
-            LocalDateTime dtFrom = LocalDateTime.of(2012,5,27,18,0);
-            LocalDateTime dtTo = LocalDateTime.of(2024,5,27,19,0);
+            LocalDateTime dtFrom = LocalDateTime.of(2023,12,31,23,59);
+            LocalDateTime dtTo = LocalDateTime.of(2025,1,1,0,0);
             transactionsQuery.setFromTime(String.valueOf(dtFrom.atZone(zoneId).toEpochSecond()*1000));
             transactionsQuery.setToTime(String.valueOf(dtTo.atZone(zoneId).toEpochSecond()*1000));
 
