@@ -1,11 +1,10 @@
 package pl.balwinski.service;
 
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.*;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import pl.balwinski.model.history.ReadableTransactionBean;
 import pl.balwinski.model.history.Transaction;
 import pl.balwinski.model.wallet.Balance;
 
@@ -32,7 +31,7 @@ public class CsvService implements TransactionsStorageService, BalancesStorageSe
 
             CsvToBean<Transaction> csvToBean = new CsvToBeanBuilder<Transaction>(reader)
                     .withType(Transaction.class)
-                    .withOrderedResults(false)
+                    .withOrderedResults(true)
                     .build();
             return csvToBean.parse();
 
@@ -44,7 +43,6 @@ public class CsvService implements TransactionsStorageService, BalancesStorageSe
 
         try (Writer writer = new FileWriter(fileName)) {
 
-            //TODO set order for columns and data format (date, quotation mark);
             StatefulBeanToCsv<Balance> beanToCsv = new StatefulBeanToCsvBuilder<Balance>(writer).build();
             beanToCsv.write(balances);
         }
@@ -61,4 +59,18 @@ public class CsvService implements TransactionsStorageService, BalancesStorageSe
 
         }
     }
+
+    public void writeReadableCsv(List<ReadableTransactionBean> tos, String fileName) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+
+        try (Writer writer = new FileWriter(fileName)) {
+
+            StatefulBeanToCsv<ReadableTransactionBean> beanToCsv = new StatefulBeanToCsvBuilder<ReadableTransactionBean>(writer)
+                    .withSeparator(';')
+                    .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                    .withOrderedResults(true)
+                    .build();
+            beanToCsv.write(tos);
+        }
+    }
+
 }
